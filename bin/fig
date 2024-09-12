@@ -1,0 +1,43 @@
+#!/bin/bash -e
+source "$(dirname "$0")/../lib/init.sh"
+
+usage() {
+    {
+        echo "usage:"
+        echo "    fig apply <modules...> - Apply fig modules"
+        echo "    fig ensure-*           - Run arbitrary ensure commands"
+        echo "    fig env                - Show fig environment"
+    } >&2
+}
+
+cmd-apply() {
+    source "$ROOT/index.sh"
+
+    # allow modules override
+    if [ "$#" -gt 0 ]; then
+        modules=("$@")
+    fi
+
+    apply-modules
+
+    success "Applied config"
+}
+
+main() {
+    case "${1:-}" in
+    apply)
+        cmd-apply "${@:2}"
+        ;;
+    env)
+        env
+        ;;
+    ensure-*)
+        "$@"
+        ;;
+    *)
+        usage
+        ;;
+    esac
+}
+
+main "$@"
