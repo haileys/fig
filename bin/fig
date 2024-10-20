@@ -4,9 +4,10 @@ source "$(dirname "$0")/../lib/init.sh"
 usage() {
     {
         echo "usage:"
-        echo "    fig apply <modules...> - Apply fig modules"
-        echo "    fig ensure-*           - Run arbitrary ensure commands"
-        echo "    fig env                - Show fig environment"
+        echo "    fig apply <modules...>           - Apply fig modules"
+        echo "    fig apply-ssh <host> <modules..> - Apply fig modules on a remote host via root ssh and rsync"
+        echo "    fig ensure-*                     - Run arbitrary ensure commands"
+        echo "    fig env                          - Show fig environment"
     } >&2
 }
 
@@ -23,10 +24,36 @@ cmd-apply() {
     success "Applied config"
 }
 
+cmd-apply-ssh() {
+    # parse args
+    (( $# > 0 )) || die "missing argument to apply-ssh"
+    local host="$1"
+    shift
+
+    # build command line for use in ssh, taking care to properly quote args
+    local cmdline="cd /.fig && fig/bin/fig apply"
+    while (( $# > 0 )); do
+        cmdline="$cmdline ${1:Q}"
+        shift
+    done
+
+    # show commands
+    set -x
+
+    # rsync config to remote host
+    rsync --exclude '.git' --recursive --delete . "root@$host:/.fig"
+
+    # run apply on remote host
+    ssh -t "root@$host" "$cmdline"
+}
+
 main() {
     case "${1:-}" in
     apply)
         cmd-apply "${@:2}"
+        ;;
+    apply-ssh)
+        cmd-apply-ssh "${@:2}"
         ;;
     env)
         env
