@@ -74,19 +74,20 @@ You're good to go! Use `rsync` to deploy your Fig repository to a server, and `s
 ## Repository layout
 
 ```
-/                           # repo root
-    index.sh                # fig entrypoint, defines `modules` array
-    foo/
-        module.sh           # module definition for "foo"
-        files/
-            etc/
-                foo.txt     # placed in /etc/foo.txt by `ensure-file`
-        gen/
-            etc/
-                magic.txt   # executable script which generates /etc/magic.txt called by `ensure-gen`
-        bar/
-            module.sh       # nested module definition for "foo/bar"
-                            # NOTE: has no implicit relationship to "foo" module
+/                               # repo root
+    index.sh                    # fig entrypoint, defines `modules` array
+    modules/
+        foo/
+            module.sh           # module definition for "foo"
+            files/
+                etc/
+                    foo.txt     # placed in /etc/foo.txt by `ensure-file`
+            gen/
+                etc/
+                    magic.txt   # executable script which generates /etc/magic.txt called by `ensure-gen`
+            bar/
+                module.sh       # nested module definition for "foo/bar"
+                                # NOTE: has no implicit relationship to "foo" module
 ```
 
 ## Full module structure
