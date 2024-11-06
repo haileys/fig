@@ -144,9 +144,13 @@ sha256-match?() {
 ensure-ssh-keygen() {
     local user="$1" type= file= "${@:2}"
 
+    # get home dir for user, also checking it exists
+    local user_homedir
+    user_homedir="$(getent passwd "$user" | cut -d: -f6)"
+
     # default values
     : "${type:=ed25519}"
-    : "${file:="/home/$user/.ssh/id_$type"}"
+    : "${file:="$user_homedir/.ssh/id_$type"}"
 
     [ -f "$file" ] || su --login --shell=/bin/bash \
         --command="ssh-keygen -t ${type@Q} -f ${file@Q} </dev/null" \
