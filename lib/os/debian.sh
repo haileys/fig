@@ -1,6 +1,6 @@
 ensure-packages() {
     if (( "$#" > 0 )); then
-        DEBIAN_FRONTEND=noninteractive apt install -y "$@"
+        DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y "$@"
     fi
 }
 
