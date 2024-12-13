@@ -33,7 +33,7 @@ cmd-apply-ssh() {
     # build command line for use in ssh, taking care to properly quote args
     local cmdline="cd /.fig && fig/bin/fig apply"
     while (( $# > 0 )); do
-        cmdline="$cmdline ${1:Q}"
+        cmdline="$cmdline ${1@Q}"
         shift
     done
 
