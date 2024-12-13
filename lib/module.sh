@@ -15,6 +15,20 @@ apply-modules() {
     module-exec-each :module-invoke-apply
 }
 
+apply-user() {
+    local user="$1"
+
+    su --shell=/bin/bash \
+        --command="cd ${ROOT@Q} && fig/bin/fig apply-user ${module@Q}" \
+        "$user"
+}
+
+apply-module-user() {
+    # usage: apply-module-user <module>
+    local module="$1" user="$USER"
+    module-exec :module-invoke-apply-user
+}
+
 all-module-packages() {
     module-exec-each :module-packages-print | sort | uniq
 }
@@ -60,16 +74,30 @@ module-exec() {
     done
 }
 
+:is-function?() {
+    [[ "$(type -t "$1")" == function ]]
+}
+
 :module-invoke-before-packages() {
-    if [[ "$(type -t before-packages)" == "function" ]]; then
+    if :is-function? before-packages; then
         log "Running $module before-packages"
         before-packages
     fi
 }
 
 :module-invoke-apply() {
-    if [[ "$(type -t apply)" == "function" ]]; then
+    if :is-function? apply; then
         log "Applying $module"
         apply
     fi
+}
+
+:module-invoke-apply-user() {
+    local apply="apply@$USER"
+
+    :is-function? "$apply" || \
+        die "Can't apply $module for user $USER - must define function '$apply'"
+
+    log "Applying $module for user $USER"
+    "$apply"
 }

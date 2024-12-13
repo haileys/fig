@@ -6,6 +6,9 @@ usage() {
         echo "usage:"
         echo "    fig apply <modules...>           - Apply fig modules"
         echo "    fig apply-ssh <host> <modules..> - Apply fig modules on a remote host via root ssh and rsync"
+        echo
+        echo "internal subcommands:"
+        echo "    fig apply-user <module>          - Apply the user config of the given module for the current user"
         echo "    fig ensure-*                     - Run arbitrary ensure commands"
         echo "    fig env                          - Show fig environment"
     } >&2
@@ -22,6 +25,11 @@ cmd-apply() {
     apply-modules
 
     success "Applied config"
+}
+
+cmd-apply-user() {
+    (( $# == 1 )) || die "missing argument to apply-user"
+    apply-module-user "$1"
 }
 
 cmd-apply-ssh() {
@@ -48,12 +56,17 @@ cmd-apply-ssh() {
 }
 
 main() {
-    case "${1:-}" in
+    local cmd="${1:-}" args=("${@:2}")
+
+    case "$cmd" in
     apply)
-        cmd-apply "${@:2}"
+        cmd-apply "${args[@]}"
         ;;
     apply-ssh)
-        cmd-apply-ssh "${@:2}"
+        cmd-apply-ssh "${args[@]}"
+        ;;
+    apply-user)
+        cmd-apply-user "${args[@]}"
         ;;
     env)
         env
