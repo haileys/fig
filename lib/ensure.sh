@@ -112,17 +112,33 @@ ensure-dir() {
 ensure-user() {
     local user="$1" "${@:2}"
 
-    local args=()
-    [ -n "${groups:-}" ] && args+=(--groups "$groups")
-    [ -n "${usergroup:-}" ] && args+=(--user-group)
-    [ -n "${homedir:-}" ] && args+=(--home-dir "$homedir")
-    [ -n "${createhome:-}" ] && args+=(--create-home)
-    [ -n "${shell:-}" ] && args+=(--shell "$shell")
-    [ -n "${uid:-}" ] && args+=(--uid "$uid")
-    [ -n "${gid:-}" ] && args+=(--gid "$gid")
+    if user-exist? "$user"; then
+        # user already exists, invoke usermod with supported args only
+        local args=()
+        [ -n "${groups:-}" ] && args+=(--append --groups "$groups")
+        [ -n "${homedir:-}" ] && args+=(--home "$homedir")
+        [ -n "${shell:-}" ] && args+=(--shell "$shell")
+        [ -n "${uid:-}" ] && args+=(--uid "$uid")
+        [ -n "${gid:-}" ] && args+=(--gid "$gid")
 
-    getent passwd "$user" >/dev/null ||
+        usermod "${args[@]}" "$user"
+    else
+        # user does not exist, create new with useradd
+        [ -n "${groups:-}" ] && args+=(--groups "$groups")
+        [ -n "${usergroup:-}" ] && args+=(--user-group)
+        [ -n "${homedir:-}" ] && args+=(--home-dir "$homedir")
+        [ -n "${createhome:-}" ] && args+=(--create-home)
+        [ -n "${shell:-}" ] && args+=(--shell "$shell")
+        [ -n "${uid:-}" ] && args+=(--uid "$uid")
+        [ -n "${gid:-}" ] && args+=(--gid "$gid")
+
         useradd "${args[@]}" "$user"
+    fi
+}
+
+user-exist?() {
+    local user="$1"
+    getent passwd "$user" >/dev/null
 }
 
 ensure-group() {
