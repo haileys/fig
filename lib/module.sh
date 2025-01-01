@@ -18,9 +18,8 @@ apply-modules() {
 apply-user() {
     local user="$1"
 
-    su --shell=/bin/bash \
-        --command="cd ${ROOT@Q} && fig/bin/fig apply-user ${module@Q}" \
-        "$user"
+    run0 --user="$user" --chdir="$ROOT" </dev/null -- \
+        "$ROOT/fig/bin/fig" apply-user "$module"
 }
 
 apply-module-user() {
