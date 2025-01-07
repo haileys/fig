@@ -2,7 +2,7 @@
 ensure-service() {
     local unit="$1"
     systemctl enable "$unit"
-    systemctl start "$unit"
+    systemctl start "$unit" || warn "unable to start service: $unit"
 }
 
 absolute-path?() {
