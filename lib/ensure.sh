@@ -245,6 +245,7 @@ ensure-machine-packages() {
         --as-pid2
         --directory "$chroot"
         --bind-ro "$ROOT:/.fig"
+        --chdir /.fig
         --setenv FIG_CHROOT="$chroot"
     )
 
