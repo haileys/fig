@@ -30,7 +30,7 @@ ensure-file() {
     [ -n "${chmod:-}" ] && chmod "$chmod" "$dest+"
 
     # atomically rename in place
-    mv "$dest+" "$dest"
+    mv --force "$dest+" "$dest"
 
     echo "file: $dest" >&2
 }
@@ -55,7 +55,7 @@ ensure-gen() {
     [ -n "${chmod:-}" ] && chmod "$chmod" "$dest+"
 
     # atomically rename in place
-    mv "$dest+" "$dest"
+    mv --force "$dest+" "$dest"
 
     echo "gen: $dest" >&2
 }
@@ -90,7 +90,7 @@ ensure-url() {
     [ -n "${chmod:-}" ] && chmod "$chmod" "$path+"
 
     # atomically rename into place
-    mv "$path+" "$path"
+    mv --force "$path+" "$path"
 }
 
 ensure-dir() {
