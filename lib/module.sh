@@ -18,8 +18,12 @@ apply-modules() {
 apply-user() {
     local user="$1"
 
-    run0 --user="$user" --chdir="$ROOT" </dev/null -- \
-        "$ROOT/fig/bin/fig" apply-user "$module"
+    if :command-exist? run0; then
+        run0 --user="$user" --chdir="$ROOT" </dev/null -- \
+            "$ROOT/fig/bin/fig" apply-user "$module"
+    else
+        su -c "cd ${ROOT@Q} && fig/bin/fig apply-user ${module@Q}" - "$user"
+    fi
 }
 
 apply-module-user() {
@@ -75,6 +79,10 @@ module-exec() {
 
 :is-function?() {
     [[ "$(type -t "$1")" == function ]]
+}
+
+:command-exist?() {
+    command -v "$1" &>/dev/null
 }
 
 :module-invoke-before-packages() {
