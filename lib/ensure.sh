@@ -169,7 +169,7 @@ ensure-ssh-keygen() {
     : "${file:="$user_homedir/.ssh/id_$type"}"
 
     [ -f "$file" ] || su --login --shell=/bin/bash \
-        --command="ssh-keygen -t ${type@Q} -f ${file@Q} </dev/null" \
+        --command="ssh-keygen -t ${type@Q} -f ${file@Q} -N '' </dev/null" \
         "$user"
 
     echo "ssh-keygen: $file"
