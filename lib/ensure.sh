@@ -151,6 +151,11 @@ ensure-group() {
         groupadd "${args[@]}" "$group"
 }
 
+ensure-group-member() {
+    local user="$1" group="$2"
+    adduser "$user" "$group"
+}
+
 sha256-match?() {
     local file="$1"
     local sha256="$2"
