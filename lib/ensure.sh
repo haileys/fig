@@ -1,8 +1,12 @@
 # enables and starts service, waiting for service to activate before returning
 ensure-service() {
     local unit="$1"
-    systemctl enable "$unit"
-    systemctl start "$unit" || warn "unable to start service: $unit"
+
+    local args=()
+    [[ "$USER" == root ]] || args+=(--user)
+
+    systemctl "${args[@]}" enable "$unit"
+    systemctl "${args[@]}" start "$unit" || warn "unable to start service: $unit"
 }
 
 absolute-path?() {
