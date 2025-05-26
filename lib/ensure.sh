@@ -125,7 +125,9 @@ ensure-user() {
         [ -n "${uid:-}" ] && args+=(--uid "$uid")
         [ -n "${gid:-}" ] && args+=(--gid "$gid")
 
-        usermod "${args[@]}" "$user"
+        if [[ "${#args[@]}" > 0 ]]; then
+            usermod "${args[@]}" "$user"
+        fi
     else
         # user does not exist, create new with useradd
         [ -n "${groups:-}" ] && args+=(--groups "$groups")
